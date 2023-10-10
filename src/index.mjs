@@ -1,22 +1,21 @@
-import Handlebars from 'handlebars';
-import { DateTime } from 'luxon';
+import { getTemplate } from './utils/dynamic-email-template/dynamic-email-template.mjs';
 
-console.log('========== Begin ==========\n');
-
-Handlebars.registerHelper('dateFormat', (...args) => {
-  const [datetime, pattern] = args;
-  return DateTime.fromISO(datetime).toFormat(pattern);
-});
-
-const template = `\nHello {{user.username}}!\nToday is {{dateFormat now "yyyy LLL dd"}}`;
+const template = `
+  Hello {{ user.username }}!
+  Currency: {{ currencyFormat currency "$ #,###.00" }}
+  DateTime: {{ datetimeFormat datetime "LLL dd yyyy" }}
+  Number: {{ numberFormat number "#,##0.####" }}
+  Percentage: {{ percentageFormat percentage "0" }}
+`;
 const context = {
   user: {
     username: 'Nhan Nguyen',
   },
-  now: new Date().toISOString(),
+  currency: 1234567.890,
+  datetime: new Date().toISOString(),
+  number: 1234567.890,
+  percentage: 99,
 };
-const html = Handlebars.compile(template)(context);
 
+const html = getTemplate(template, context);
 console.log('Your Template:', html);
-
-console.log('\n========== End ==========');
